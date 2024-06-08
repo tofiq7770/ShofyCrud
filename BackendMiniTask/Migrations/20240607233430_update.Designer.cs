@@ -3,6 +3,7 @@ using BackendMiniTask.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendMiniTask.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240607233430_update")]
+    partial class update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,6 +59,7 @@ namespace BackendMiniTask.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Color")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
@@ -67,10 +70,15 @@ namespace BackendMiniTask.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Price")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductImageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SKU")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("SoftDelete")
@@ -79,6 +87,8 @@ namespace BackendMiniTask.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ProductImageId");
 
                     b.ToTable("Products");
                 });
@@ -98,15 +108,10 @@ namespace BackendMiniTask.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("SoftDelete")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
                 });
@@ -151,18 +156,15 @@ namespace BackendMiniTask.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("BackendMiniTask.Models.ProductImage", b =>
-                {
-                    b.HasOne("BackendMiniTask.Models.Product", "Product")
-                        .WithMany("ProductImage")
-                        .HasForeignKey("ProductId")
+                    b.HasOne("BackendMiniTask.Models.ProductImage", "ProductImage")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("Category");
+
+                    b.Navigation("ProductImage");
                 });
 
             modelBuilder.Entity("BackendMiniTask.Models.Category", b =>
@@ -170,9 +172,9 @@ namespace BackendMiniTask.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("BackendMiniTask.Models.Product", b =>
+            modelBuilder.Entity("BackendMiniTask.Models.ProductImage", b =>
                 {
-                    b.Navigation("ProductImage");
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
